@@ -1,7 +1,6 @@
 class SARSA:
     def __init__(self, goal_state_reward, pit_reward, move_reward,
                  give_up_reward, num_trails, exploration_epsilon):
-
         self._goal_reward = goal_state_reward
         self._pit_reward = pit_reward
         self._move_reward = move_reward
@@ -10,4 +9,11 @@ class SARSA:
         self._exploration_epsilon = exploration_epsilon
 
     def learn(self):
+        for ii in range(self._num_trials):
+            # do the trails, once we figure out how to do it
+            pass
+
+        self.print_recommended_actions()
+
+    def print_recommended_actions(self):
         pass
