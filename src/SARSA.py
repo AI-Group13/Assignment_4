@@ -43,13 +43,13 @@ class SARSA:
                 wanted_move = 4
             return wanted_move
 
-        val = random.randint(0, 10)
+        val = random.randint(0, 9)
 
-        if val <= 7:
+        if val <= 6:
             return requested_move, False
-        elif 7 < val <= 8:
+        elif 6 < val <= 7:
             return rotate_right(requested_move), False
-        elif 8 < val <= 9:
+        elif 7 < val <= 8:
             return rotate_left(requested_move), False
         else:
             return requested_move, True
