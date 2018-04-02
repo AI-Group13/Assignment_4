@@ -1,10 +1,20 @@
 import random
 
+import numpy as np
+
 
 class Environment:
 
-    def __init__(self, goal_state_reward, pit_reward, move_reward,
-                 give_up_reward):
+    def __init__(self, goal_state_reward, pit_reward, move_reward, give_up_reward):
+
+        # 0 is empty area, 1 is goal, 2 is pit
+        # self._grid[y][x]
+        self._grid = np.matrix([[0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0],
+                                [0, 0, 2, 2, 0, 0, 0],
+                                [0, 2, 1, 0, 0, 2, 0],
+                                [0, 0, 2, 2, 2, 0, 0],
+                                [0, 0, 0, 0, 0, 0, 0]])
 
         self._goal_reward = goal_state_reward
         self._pit_reward = pit_reward
