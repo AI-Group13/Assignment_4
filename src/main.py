@@ -1,5 +1,7 @@
-import SARSA
 import argparse
+
+import SARSA
+import environment
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Reinforcement Learning')
@@ -13,14 +15,16 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    sarsa = SARSA.SARSA(
+    env = environment.Environment(
         args['goal_state_reward'],
         args['pit_fall_reward'],
         args['move_reward'],
-        args['give_up_reward'],
+        args['give_up_reward'])
+
+    sarsa = SARSA.SARSA(
+        env,
         args['number_of_trials'],
         args['exploration_epsilon']
     )
 
     sarsa.learn()
-
