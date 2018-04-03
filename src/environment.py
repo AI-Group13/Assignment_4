@@ -7,6 +7,9 @@ class Environment:
 
     def __init__(self, goal_state_reward, pit_reward, move_reward, give_up_reward):
 
+        # randomize the seed to current system time
+        random.seed(None)
+
         # 0 is empty area, 1 is goal, 2 is pit
         # self._grid[y][x]
         self._grid = np.matrix([[0, 0, 0, 0, 0, 0, 0],
@@ -21,14 +24,13 @@ class Environment:
         self._move_reward = move_reward
         self._give_up_reward = give_up_reward
 
-        self._current_x = 0
-        self._current_y = 0
+        self._x_size = self._grid.shape[1]
+        self._y_size = self._grid.shape[0]
 
-        self._x_size = 30
-        self._y_size = 30
+        self._current_x = None
+        self._current_y = None
 
-        # randomize the seed to current system time
-        random.seed(None)
+        self.random_start()
 
     def step(self, action):
         direction, double = self.get_actual_movement(action)
@@ -41,6 +43,19 @@ class Environment:
         self._current_y = y
 
         return (x, y), reward, is_done
+
+    def random_start(self):
+
+        self._current_x = None
+        self._current_y = None
+
+        while self._current_x is None and self._current_y is None:
+            self._current_x = random.randint(0, 6)
+            self._current_y = random.randint(0, 5)
+
+            if self._grid[self._current_y, self._current_x] != 0:
+                self._current_x = None
+                self._current_y = None
 
     '''
     requested move = [0, 1, 2, 3] for [up, right, down, left]
