@@ -32,25 +32,26 @@ class Environment:
 
         self.random_start()
 
-        self._reward = 0
-        self._is_done = False
-
     def step(self, action):
         direction, double = self.get_actual_movement(action)
         self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
 
+        # TODO see if these need to be tracked over time
+        reward = 0
+        is_done = False
+
         current_grid = self._grid[self._y][self._x]
 
         if current_grid == 0:
-            self._reward += self._move_reward * (lambda x: 2 if double else 1)
+            reward += self._move_reward * (lambda x: 2 if double else 1)
         elif current_grid == 1:
-            self._reward += self._goal_reward
-            self._is_done = True
+            reward += self._goal_reward
+            is_done = True
         elif current_grid == 2:
-            self._reward += self._pit_reward
-            self._is_done = True
+            reward += self._pit_reward
+            is_done = True
 
-        return (self._x, self._y), self._reward, self._is_done
+        return (self._x, self._y), reward, is_done
 
     def random_start(self):
 
