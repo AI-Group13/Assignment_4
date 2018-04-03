@@ -24,6 +24,8 @@ class Environment:
         self._move_reward = move_reward
         self._give_up_reward = give_up_reward
 
+        self._running_reward = 0
+
         self._x_size = self._grid.shape[1]
         self._y_size = self._grid.shape[0]
 
@@ -32,6 +34,9 @@ class Environment:
 
         self.random_start()
 
+    '''
+    takes in an action and determines the effect that action has on the environment
+    '''
     def step(self, action):
         direction, double = self.get_actual_movement(action)
         self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
@@ -51,7 +56,12 @@ class Environment:
             reward += self._pit_reward
             is_done = True
 
+        self._running_reward += reward
+
         return (self._x, self._y), reward, is_done
+    '''
+    generates a random location. Checks to make sure that location is not a pit, otherwise it trys again
+    '''
 
     def random_start(self):
 
@@ -65,6 +75,16 @@ class Environment:
             if self._grid[self._y, self._x] != 0:
                 self._x = None
                 self._y = None
+
+    '''
+    resets the environment 
+    sets the running reward to 0, then chooses a random start location
+    '''
+
+    def reset(self):
+
+        self._running_reward = 0
+        self.random_start()
 
     '''
     requested move = [0, 1, 2, 3] for [up, right, down, left]
