@@ -27,35 +27,43 @@ class Environment:
         self._x_size = self._grid.shape[1]
         self._y_size = self._grid.shape[0]
 
-        self._current_x = None
-        self._current_y = None
+        self._x = None
+        self._y = None
 
         self.random_start()
 
+        self._reward = 0
+        self._is_done = False
+
     def step(self, action):
         direction, double = self.get_actual_movement(action)
-        x, y = self.get_final_location(self._current_x, self._current_y, direction, double)
+        self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
 
-        reward = 0
-        is_done = False
+        current_grid = self._grid[self._y][self._x]
 
-        self._current_x = x
-        self._current_y = y
+        if current_grid == 0:
+            self._reward += self._move_reward * (lambda x: 2 if double else 1)
+        elif current_grid == 1:
+            self._reward += self._goal_reward
+            self._is_done = True
+        elif current_grid == 2:
+            self._reward += self._pit_reward
+            self._is_done = True
 
-        return (x, y), reward, is_done
+        return (self._x, self._y), self._reward, self._is_done
 
     def random_start(self):
 
-        self._current_x = None
-        self._current_y = None
+        self._x = None
+        self._y = None
 
-        while self._current_x is None and self._current_y is None:
-            self._current_x = random.randint(0, 6)
-            self._current_y = random.randint(0, 5)
+        while self._x is None and self._y is None:
+            self._x = random.randint(0, 6)
+            self._y = random.randint(0, 5)
 
-            if self._grid[self._current_y, self._current_x] != 0:
-                self._current_x = None
-                self._current_y = None
+            if self._grid[self._y, self._x] != 0:
+                self._x = None
+                self._y = None
 
     '''
     requested move = [0, 1, 2, 3] for [up, right, down, left]
