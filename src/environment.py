@@ -24,7 +24,7 @@ class Environment:
         self._move_reward = move_reward
         self._give_up_reward = give_up_reward
 
-        self._running_reward = 0
+        self.running_reward = 0
 
         self._x_size = self._grid.shape[1]
         self._y_size = self._grid.shape[0]
@@ -55,6 +55,8 @@ class Environment:
         # if we get here, the movement was only one step, or the movement was double but we didn't hit an end goal
         self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
         reward, is_done = self.get_step_reward(self._x, self._y, double)
+
+        self.running_reward += reward
 
         return (self._x, self._y), reward, is_done
 
@@ -102,7 +104,7 @@ class Environment:
 
     def reset(self):
 
-        self._running_reward = 0
+        self.running_reward = 0
         self.random_start()
 
     '''
@@ -217,7 +219,5 @@ class Environment:
         elif current_grid == 2:
             reward += self._pit_reward
             is_done = True
-
-        self._running_reward += reward
 
         return reward, is_done
