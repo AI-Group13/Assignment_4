@@ -37,28 +37,47 @@ class Environment:
     '''
     takes in an action and determines the effect that action has on the environment
     '''
+
     def step(self, action):
         direction, double = self.get_actual_movement(action)
+
+        # special check for double movements to make sure it didn't hit an ending location 1 move away
+        if double:
+            step_x, step_y = self.get_skipped_location(self._x, self._y, direction)
+            reward, is_done = self.get_step_reward(step_x, step_y, False)
+            # if we finished (hit goal or pit, either or), set the variables, and return that were finished
+            if is_done:
+                self._x = step_x
+                self._y = step_y
+
+                return (self._x, self._y), reward, is_done
+
+        # if we get here, the movement was only one step, or the movement was double but we didn't hit an end goal
         self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
-
-        # TODO see if these need to be tracked over time
-        reward = 0
-        is_done = False
-
-        current_grid = self._grid[self._y][self._x]
-
-        if current_grid == 0:
-            reward += self._move_reward * (lambda x: 2 if double else 1)
-        elif current_grid == 1:
-            reward += self._goal_reward
-            is_done = True
-        elif current_grid == 2:
-            reward += self._pit_reward
-            is_done = True
-
-        self._running_reward += reward
+        reward, is_done = self.get_step_reward(self._x, self._y, double)
 
         return (self._x, self._y), reward, is_done
+
+    '''
+    mirror of step method that instead takes in the starting location instead of changing the objects values
+    '''
+    def future_step(self, action, future_x, future_y):
+        direction, double = self.get_actual_movement(action)
+
+        # special check for double movements to make sure it didn't hit an ending location 1 move away
+        if double:
+            step_x, step_y = self.get_skipped_location(future_x, future_y, direction)
+            reward, is_done = self.get_step_reward(step_x, step_y, False)
+            # if we finished (hit goal or pit, either or), set the variables, and return that were finished
+            if is_done:
+                return (future_x, future_y), reward, is_done
+
+        # if we get here, the movement was only one step, or the movement was double but we didn't hit an end goal
+        x, y = self.get_final_location(future_x, future_y, direction, double)
+        reward, is_done = self.get_step_reward(x, y, double)
+
+        return (x, y), reward, is_done
+
     '''
     generates a random location. Checks to make sure that location is not a pit, otherwise it trys again
     '''
@@ -117,6 +136,10 @@ class Environment:
         else:
             return requested_move, True
 
+    '''
+    finds the final location of the movement
+    '''
+
     def get_final_location(self, start_x, start_y, direction, is_double):
 
         def clamp(val, minn, maxn):
@@ -150,3 +173,51 @@ class Environment:
         current_y = clamp(current_y, 0, self._y_size)
 
         return current_x, current_y
+
+    '''
+    finds the stepped over location for use with pit/goals checks
+    '''
+
+    def get_skipped_location(self, start_x, start_y, direction):
+        def clamp(val, minn, maxn):
+            return min(max(val, minn), maxn)
+
+        current_x = start_x
+        current_y = start_y
+
+        if direction == 0:
+            current_y += 1
+        elif direction == 1:
+            current_x += 1
+        elif direction == 2:
+            current_y -= 1
+        elif direction == 3:
+            current_x -= 1
+
+        current_x = clamp(current_x, 0, self._x_size)
+        current_y = clamp(current_y, 0, self._y_size)
+
+        return current_x, current_y
+
+    '''
+    computes the step reward result and whether or not its done
+    '''
+
+    def get_step_reward(self, x, y, is_double):
+        reward = 0
+        is_done = False
+
+        current_grid = self._grid[y][x]
+
+        if current_grid == 0:
+            reward += self._move_reward * (lambda _: 2 if is_double else 1)
+        elif current_grid == 1:
+            reward += self._goal_reward
+            is_done = True
+        elif current_grid == 2:
+            reward += self._pit_reward
+            is_done = True
+
+        self._running_reward += reward
+
+        return reward, is_done
