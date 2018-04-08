@@ -38,8 +38,12 @@ class Environment:
     takes in an action and determines the effect that action has on the environment
     '''
 
-    def step(self, action):
-        direction, double = self.get_actual_movement(action)
+    def step(self, action, q_init=False):
+        direction = action
+        double = False
+
+        if not q_init:
+            direction, double = self.get_actual_movement(action)
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
         if double:
