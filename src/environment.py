@@ -1,5 +1,5 @@
-import random
 import copy
+import random
 
 import numpy as np
 
@@ -33,10 +33,10 @@ class Environment:
         self._x = None
         self._y = None
 
-        self.state_size = self._x_size*self._y_size
+        self.state_size = self._x_size * self._y_size
         self.state_space = np.reshape(copy.deepcopy(self._grid), (1, self.state_size))
 
-        self.action_space = np.array([0,1,2,3,5])
+        self.action_space = np.array([0, 1, 2, 3, 5])
         self.action_size = self.action_space.size
 
         self.random_start()
@@ -45,8 +45,16 @@ class Environment:
     takes in an action and determines the effect that action has on the environment
     '''
 
-    def step(self, action):
-        direction, double = self.get_actual_movement(action)
+    def step(self, action, q_init=False):
+        direction = action
+        double = False
+
+        if action == 5:
+            self.running_reward += self._give_up_reward
+            return (self._x, self._y), self._give_up_reward, True
+
+        if q_init:
+            direction, double = self.get_actual_movement(action)
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
         if double:
@@ -56,6 +64,8 @@ class Environment:
             if is_done:
                 self._x = step_x
                 self._y = step_y
+
+                self.running_reward += reward
 
                 return (self._x, self._y), reward, is_done
 
@@ -70,8 +80,12 @@ class Environment:
     '''
     mirror of step method that instead takes in the starting location instead of changing the objects values
     '''
+
     def future_step(self, action, future_x, future_y):
         direction, double = self.get_actual_movement(action)
+
+        if action == 5:
+            return (future_x, future_y), self._give_up_reward, True
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
         if double:
@@ -97,8 +111,8 @@ class Environment:
         self._y = None
 
         while self._x is None and self._y is None:
-            self._x = random.randint(0, 6)
-            self._y = random.randint(0, 5)
+            self._x = random.randint(0, self._x_size)
+            self._y = random.randint(0, self._y_size)
 
             if self._grid[self._y, self._x] != 0:
                 self._x = None
@@ -131,7 +145,7 @@ class Environment:
         def rotate_left(wanted_move):
             wanted_move -= 1
             if wanted_move == -1:
-                wanted_move = 4
+                wanted_move = 3
             return wanted_move
 
         val = random.randint(0, 9)
@@ -216,11 +230,11 @@ class Environment:
         reward = 0
         is_done = False
 
-        current_grid = self._grid[y,x]
+        current_grid = self._grid[y, x]
         r = lambda is_double: 2 if is_double else 1
 
         if current_grid == 0:
-            reward += self._move_reward *r(is_double)
+            reward += self._move_reward * r(is_double)
         elif current_grid == 1:
             reward += self._goal_reward
             is_done = True
