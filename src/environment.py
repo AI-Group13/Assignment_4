@@ -1,4 +1,5 @@
 import random
+import copy
 
 import numpy as np
 
@@ -32,18 +33,20 @@ class Environment:
         self._x = None
         self._y = None
 
+        self.state_size = self._x_size*self._y_size
+        self.state_space = np.reshape(copy.deepcopy(self._grid), (1, self.state_size))
+
+        self.action_space = np.array([0,1,2,3,5])
+        self.action_size = self.action_space.size
+
         self.random_start()
 
     '''
     takes in an action and determines the effect that action has on the environment
     '''
 
-    def step(self, action, q_init=False):
-        direction = action
-        double = False
-
-        if not q_init:
-            direction, double = self.get_actual_movement(action)
+    def step(self, action):
+        direction, double = self.get_actual_movement(action)
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
         if double:
@@ -121,14 +124,14 @@ class Environment:
 
         def rotate_right(wanted_move):
             wanted_move += 1
-            if wanted_move == 3:
+            if wanted_move == 4:
                 wanted_move = 0
             return wanted_move
 
         def rotate_left(wanted_move):
             wanted_move -= 1
             if wanted_move == -1:
-                wanted_move = 3
+                wanted_move = 4
             return wanted_move
 
         val = random.randint(0, 9)
@@ -213,10 +216,11 @@ class Environment:
         reward = 0
         is_done = False
 
-        current_grid = self._grid[y][x]
+        current_grid = self._grid[y,x]
+        r = lambda is_double: 2 if is_double else 1
 
         if current_grid == 0:
-            reward += self._move_reward * (lambda _: 2 if is_double else 1)
+            reward += self._move_reward *r(is_double)
         elif current_grid == 1:
             reward += self._goal_reward
             is_done = True
