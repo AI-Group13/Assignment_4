@@ -117,14 +117,14 @@ class Environment:
 
         def rotate_right(wanted_move):
             wanted_move += 1
-            if wanted_move == 4:
+            if wanted_move == 3:
                 wanted_move = 0
             return wanted_move
 
         def rotate_left(wanted_move):
             wanted_move -= 1
             if wanted_move == -1:
-                wanted_move = 4
+                wanted_move = 3
             return wanted_move
 
         val = random.randint(0, 9)
