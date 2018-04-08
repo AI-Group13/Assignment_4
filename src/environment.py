@@ -30,14 +30,14 @@ class Environment:
         self._x_size = self._grid.shape[1]
         self._y_size = self._grid.shape[0]
 
-        self._x = None
-        self._y = None
-
         self.state_size = self._x_size * self._y_size
         self.state_space = np.reshape(copy.deepcopy(self._grid), (1, self.state_size))
 
         self.action_space = np.array([0, 1, 2, 3, 5])
         self.action_size = self.action_space.size
+
+        self._x = None
+        self._y = None
 
         self.random_start()
 
