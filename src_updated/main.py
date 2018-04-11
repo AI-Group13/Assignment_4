@@ -37,11 +37,11 @@ def main():
 
     env, sarsa = read_argument()
     Q_table = sarsa.initialize_Qtable(env)
-    sarsa.implement_sarsa(env)
+    Qtab, avrew = sarsa.implement_sarsa(env)
     # print ("Initialized Q table \n", Q_table, "\n")
 
-    # sarsa.learn()
-
+    sarsa.final_world(Qtab)
+    sarsa.plot_graphs(avrew)
 
 
 if __name__ == '__main__':

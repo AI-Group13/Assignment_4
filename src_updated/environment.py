@@ -223,16 +223,16 @@ class Environment:
         current_y = start_y
 
         if direction == 0:
-            current_y += 1
+            current_y -= 1
         elif direction == 1:
             current_x += 1
         elif direction == 2:
-            current_y -= 1
+            current_y += 1
         elif direction == 3:
             current_x -= 1
 
-        current_x = clamp(current_x, 0, self._x_size)
-        current_y = clamp(current_y, 0, self._y_size)
+        current_x = clamp(current_x, 0, self._x_size-1)
+        current_y = clamp(current_y, 0, self._y_size-1)
 
         return current_x, current_y
 
