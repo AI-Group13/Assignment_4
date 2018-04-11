@@ -39,6 +39,9 @@ class Environment:
         self._x = None
         self._y = None
 
+        self.start_x = self._x
+        self.start_y = self._y
+
         self.random_start()
 
     '''
@@ -46,19 +49,21 @@ class Environment:
     '''
 
     def step(self, action, q_init=False):
-        direction = action
-        double = False
 
         if action == 5:
             self.running_reward += self._give_up_reward
             return (self._x, self._y), self._give_up_reward, True
 
         if q_init:
-            direction, double = self.get_actual_movement(action)
+            next_x, next_y = self.get_final_location(self._x, self._y, action, False)
+            reward, is_done = self.get_step_reward(self._x, self._y, False)
+            return (next_x, next_y), reward, is_done
+
+        new_action, is_double = self.get_actual_movement(action)
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
-        if double:
-            step_x, step_y = self.get_skipped_location(self._x, self._y, direction)
+        if is_double:
+            step_x, step_y = self.get_skipped_location(self._x, self._y, new_action)
             reward, is_done = self.get_step_reward(step_x, step_y, False)
             # if we finished (hit goal or pit, either or), set the variables, and return that were finished
             if is_done:
@@ -68,14 +73,20 @@ class Environment:
                 self.running_reward += reward
 
                 return (self._x, self._y), reward, is_done
+            else:
+                self._x, self._y = self.get_final_location(self._x, self._y, new_action, is_double)
+                reward, is_done = self.get_step_reward(self._x, self._y, is_double)
 
-        # if we get here, the movement was only one step, or the movement was double but we didn't hit an end goal
-        self._x, self._y = self.get_final_location(self._x, self._y, direction, double)
-        reward, is_done = self.get_step_reward(self._x, self._y, double)
+                self.running_reward += reward
 
-        self.running_reward += reward
+                return (self._x, self._y), reward, is_done
+        else:
+            self._x, self._y = self.get_final_location(self._x, self._y, new_action, is_double)
+            reward, is_done = self.get_step_reward(self._x, self._y, is_double)
 
-        return (self._x, self._y), reward, is_done
+            self.running_reward += reward
+
+            return (self._x, self._y), reward, is_done
 
     '''
     mirror of step method that instead takes in the starting location instead of changing the objects values
@@ -117,6 +128,9 @@ class Environment:
             if self._grid[self._y, self._x] != 0:
                 self._x = None
                 self._y = None
+
+        self.start_x = self._x
+        self.start_y = self._y
 
     '''
     resets the environment 
@@ -243,3 +257,7 @@ class Environment:
             is_done = True
 
         return reward, is_done
+
+    def set_start_location(self, x, y):
+        self._x = x
+        self._y = y
