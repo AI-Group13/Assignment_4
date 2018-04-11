@@ -57,13 +57,69 @@ class SARSA:
 
         return self.Q_table
 
-    def implement_sarsa(self):
+    def implement_sarsa(self,env):
 
 
         # IMPLEMENT THE SARSA CODE HERE
         Q_tabl = self.Q_table 
-        print (Q_tabl)   
+        print (Q_tabl) 
+        
+        #ns,rew,status = env.step(0)
+        #print(status)
 
+        running_counter = 0
+        giveUp_count = 50
+        epsilon = self._exploration_epsilon
+        learn_rate = 0.1
+        gamma = 0.9
+
+        for i in range(0,self._num_trials):
+            running_counter = 0
+            env.random_start()
+            while(running_counter<giveUp_count):
+                current_state = ((np.shape(env._grid)[1]*env._y) + env._x)
+                random_factor = np.random.uniform(0.0,1.0)
+                
+                current_move = 0
+                if random_factor < epsilon:
+                    current_move = np.random.randint(5)
+                    Q_cur = Q_tabl[current_state][current_move] 
+                    Q_new, Q_prev_rew, status = env.step(current_move)
+                else:
+                    unique_test = np.unique(Q_tabl[current_state])
+                    if np.size(unique_test) == 1:
+                        current_move = np.random.randint(5)
+                        Q_cur = Q_tabl[current_state][current_move] 
+                        Q_new, Q_prev_rew, status = env.step(current_move)
+                    else:
+                        current_move = np.argmax(Q_tabl[current_state])
+                        Q_cur = Q_tabl[current_state][current_move] 
+                        Q_new, Q_prev_rew, status = env.step(current_move)
+                
+                
+                if status == True:
+                    break
+                    
+                new_state = ((np.shape(env._grid)[1]*env._y) + env._x)
+                random_factor = np.random.uniform(0.0,1.0)
+                
+                if random_factor < epsilon:
+                    rand_move = np.random.randint(5)
+                    Q_next = Q_tabl[new_state][rand_move] 
+                else:
+                    unique_test = np.unique(Q_tabl[new_state])
+                    if np.size(unique_test) == 1:
+                        rand_move = np.random.randint(5)
+                        Q_next = Q_tabl[new_state][rand_move] 
+                    else:
+                        move = np.argmax(Q_tabl[new_state])
+                        Q_next = Q_tabl[new_state][move]
+                        
+                Update_Q = Q_cur + learn_rate*(Q_prev_rew + (gamma*Q_next) - Q_cur)
+                Q_tabl[current_state][current_move] = Update_Q
+                running_counter += 1
+                
+        print(Q_tabl)
 
 '''
 Pseudocode/actual code

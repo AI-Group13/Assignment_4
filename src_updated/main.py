@@ -37,7 +37,7 @@ def main():
 
     env, sarsa = read_argument()
     Q_table = sarsa.initialize_Qtable(env)
-    sarsa.implement_sarsa()
+    sarsa.implement_sarsa(env)
     # print ("Initialized Q table \n", Q_table, "\n")
 
     # sarsa.learn()

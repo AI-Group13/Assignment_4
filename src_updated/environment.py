@@ -19,7 +19,7 @@ class Environment:
                                 [0, 2, 1, 0, 0, 2, 0],
                                 [0, 0, 2, 2, 2, 0, 0],
                                 [0, 0, 0, 0, 0, 0, 0]])
-
+        print(np.shape(self._grid))
         self._goal_reward = goal_state_reward
         self._pit_reward = pit_reward
         self._move_reward = move_reward
