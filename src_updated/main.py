@@ -36,6 +36,11 @@ def read_argument():
 def main():
 
     env, sarsa = read_argument()
+    print ("Goal Reward \t", env._goal_reward, "\n" )
+    print ("Pit Reward \t", env._pit_reward, "\n" )
+    print ("Move Reward \t", env._move_reward, "\n" )
+    print ("Give up Reward \t", env._give_up_reward, "\n" )
+
     Q_table = sarsa.initialize_Qtable(env)
     Qtab, avrew = sarsa.implement_sarsa(env)
     # print ("Initialized Q table \n", Q_table, "\n")
