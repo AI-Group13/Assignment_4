@@ -19,7 +19,7 @@ class Environment:
                                 [0, 2, 1, 0, 0, 2, 0],
                                 [0, 0, 2, 2, 2, 0, 0],
                                 [0, 0, 0, 0, 0, 0, 0]])
-
+        print(np.shape(self._grid))
         self._goal_reward = goal_state_reward
         self._pit_reward = pit_reward
         self._move_reward = move_reward
@@ -56,7 +56,7 @@ class Environment:
 
         if q_init:
             next_x, next_y = self.get_final_location(self._x, self._y, action, False)
-            reward, is_done = self.get_step_reward(self._x, self._y, False)
+            reward, is_done = self.get_step_reward(next_x, next_y, False)
             return (next_x, next_y), reward, is_done
 
         new_action, is_double = self.get_actual_movement(action)
@@ -122,8 +122,8 @@ class Environment:
         self._y = None
 
         while self._x is None and self._y is None:
-            self._x = random.randint(0, self._x_size)
-            self._y = random.randint(0, self._y_size)
+            self._x = random.randint(0, self._x_size-1)
+            self._y = random.randint(0, self._y_size-1)
 
             if self._grid[self._y, self._x] != 0:
                 self._x = None
@@ -187,9 +187,9 @@ class Environment:
 
         if direction == 0:
             if is_double:
-                current_y += 2
+                current_y -= 2
             else:
-                current_y += 1
+                current_y -= 1
         elif direction == 1:
             if is_double:
                 current_x += 2
@@ -197,17 +197,17 @@ class Environment:
                 current_x += 1
         elif direction == 2:
             if is_double:
-                current_y -= 2
+                current_y += 2
             else:
-                current_y -= 1
+                current_y += 1
         elif direction == 3:
             if is_double:
                 current_x -= 2
             else:
                 current_x -= 1
 
-        current_x = clamp(current_x, 0, self._x_size)
-        current_y = clamp(current_y, 0, self._y_size)
+        current_x = clamp(current_x, 0, self._x_size-1)
+        current_y = clamp(current_y, 0, self._y_size-1)
 
         return current_x, current_y
 
@@ -223,16 +223,16 @@ class Environment:
         current_y = start_y
 
         if direction == 0:
-            current_y += 1
+            current_y -= 1
         elif direction == 1:
             current_x += 1
         elif direction == 2:
-            current_y -= 1
+            current_y += 1
         elif direction == 3:
             current_x -= 1
 
-        current_x = clamp(current_x, 0, self._x_size)
-        current_y = clamp(current_y, 0, self._y_size)
+        current_x = clamp(current_x, 0, self._x_size-1)
+        current_y = clamp(current_y, 0, self._y_size-1)
 
         return current_x, current_y
 
