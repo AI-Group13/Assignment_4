@@ -20,10 +20,10 @@ class Environment:
                                 [0, 0, 2, 2, 2, 0, 0],
                                 [0, 0, 0, 0, 0, 0, 0]])
         print(np.shape(self._grid))
-        self._goal_reward = goal_state_reward
-        self._pit_reward = pit_reward
-        self._move_reward = move_reward
-        self._give_up_reward = give_up_reward
+        self.goal_reward = goal_state_reward
+        self.pit_reward = pit_reward
+        self.move_reward = move_reward
+        self.give_up_reward = give_up_reward
 
         self.running_reward = 0
 
@@ -51,8 +51,8 @@ class Environment:
     def step(self, action, q_init=False):
 
         if action == 5:
-            self.running_reward += self._give_up_reward
-            return (self._x, self._y), self._give_up_reward, True
+            self.running_reward += self.give_up_reward
+            return (self._x, self._y), self.give_up_reward, True
 
         if q_init:
             next_x, next_y = self.get_final_location(self._x, self._y, action, False)
@@ -96,7 +96,7 @@ class Environment:
         direction, double = self.get_actual_movement(action)
 
         if action == 5:
-            return (future_x, future_y), self._give_up_reward, True
+            return (future_x, future_y), self.give_up_reward, True
 
         # special check for double movements to make sure it didn't hit an ending location 1 move away
         if double:
@@ -122,8 +122,8 @@ class Environment:
         self._y = None
 
         while self._x is None and self._y is None:
-            self._x = random.randint(0, self._x_size-1)
-            self._y = random.randint(0, self._y_size-1)
+            self._x = random.randint(0, self._x_size - 1)
+            self._y = random.randint(0, self._y_size - 1)
 
             if self._grid[self._y, self._x] != 0:
                 self._x = None
@@ -206,8 +206,8 @@ class Environment:
             else:
                 current_x -= 1
 
-        current_x = clamp(current_x, 0, self._x_size-1)
-        current_y = clamp(current_y, 0, self._y_size-1)
+        current_x = clamp(current_x, 0, self._x_size - 1)
+        current_y = clamp(current_y, 0, self._y_size - 1)
 
         return current_x, current_y
 
@@ -231,8 +231,8 @@ class Environment:
         elif direction == 3:
             current_x -= 1
 
-        current_x = clamp(current_x, 0, self._x_size-1)
-        current_y = clamp(current_y, 0, self._y_size-1)
+        current_x = clamp(current_x, 0, self._x_size - 1)
+        current_y = clamp(current_y, 0, self._y_size - 1)
 
         return current_x, current_y
 
@@ -248,12 +248,12 @@ class Environment:
         r = lambda is_double: 2 if is_double else 1
 
         if current_grid == 0:
-            reward += self._move_reward * r(is_double)
+            reward += self.move_reward * r(is_double)
         elif current_grid == 1:
-            reward += self._goal_reward
+            reward += self.goal_reward
             is_done = True
         elif current_grid == 2:
-            reward += self._pit_reward
+            reward += self.pit_reward
             is_done = True
 
         return reward, is_done

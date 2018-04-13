@@ -4,8 +4,8 @@ import SARSA
 import environment
 import numpy as np
 
-def read_argument():
 
+def read_argument():
     parser = argparse.ArgumentParser('Reinforcement Learning')
 
     parser.add_argument('goal_state_reward', type=float, help='The reward for reaching the goal state')
@@ -32,14 +32,12 @@ def read_argument():
     return env, sarsa
 
 
-
 def main():
-
     env, sarsa = read_argument()
-    print ("Goal Reward \t", env._goal_reward, "\n" )
-    print ("Pit Reward \t", env._pit_reward, "\n" )
-    print ("Move Reward \t", env._move_reward, "\n" )
-    print ("Give up Reward \t", env._give_up_reward, "\n" )
+    print("Goal Reward \t", env.goal_reward, "\n")
+    print("Pit Reward \t", env.pit_reward, "\n")
+    print("Move Reward \t", env.move_reward, "\n")
+    print("Give up Reward \t", env.give_up_reward, "\n")
 
     Q_table = sarsa.initialize_Qtable(env)
     Qtab, avrew = sarsa.implement_sarsa(env)
